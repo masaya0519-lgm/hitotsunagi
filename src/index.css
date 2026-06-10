@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  font-family: 'M PLUS Rounded 1c', 'Hiragino Maru Gothic ProN', 'Hiragino Maru Gothic Pro', 'Yu Gothic', sans-serif;
+  background-color: #f0fdf4;
+  background-image: radial-gradient(circle, #bbf7d0 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+#root {
+  height: 100vh;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* AC-style button press effect */
+.btn-ac {
+  box-shadow: 0 4px 0 #15803d;
+  transition: box-shadow 0.08s, transform 0.08s;
+}
+.btn-ac:active {
+  box-shadow: 0 1px 0 #15803d;
+  transform: translateY(3px);
+}
