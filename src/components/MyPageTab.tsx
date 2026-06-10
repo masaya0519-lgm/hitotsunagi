@@ -19,7 +19,6 @@ function TagToggle({
   items: string[]; selected: string[]; onToggle: (v: string) => void; color?: string;
 }) {
   const active: Record<string, string> = {
-    rose: "bg-green-600 text-white border-green-600",
     rose:   "bg-green-500 text-white border-green-500",
     amber:  "bg-yellow-400 text-white border-yellow-400",
     emerald:"bg-emerald-600 text-white border-emerald-600",

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, MessageSquare, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { users, INDUSTRIES, CAREER_ORIENTATIONS, STATUS_OPTIONS } from "../data/mock";
 import type { User } from "../data/mock";
 import ProfileModal from "./ProfileModal";
