@@ -4,6 +4,14 @@ export type ProjectExp = {
   industry: string;
   phase: string;
   tech: string;
+  description?: string;
+};
+
+export type PrevJob = {
+  company: string;
+  role: string;
+  years: string;
+  note?: string;
 };
 
 export type UserStatusId = "drink" | "talk" | "lunch" | "dnd" | null;
@@ -42,6 +50,8 @@ export type User = {
   favoriteFoods: string[];
   hobbies: string[];
   meetStyle: string;
+
+  prevJobs?: PrevJob[];
 
   // その他
   bio: string;
@@ -131,7 +141,7 @@ export const ME: User = {
   careerOrientation: "まだ模索中",
   expertiseAreas: ["DX戦略立案"],
   projectExperiences: [
-    { industry: "製造", phase: "要件定義", tech: "その他" },
+    { industry: "製造", phase: "要件定義", tech: "その他", description: "入社半年後の最初のアサイン。クライアントへの初ヒアリングで頭が真っ白になった。先輩にメモの整理方法を教わりながら、なんとか要件定義書をまとめた。" },
   ],
   talkTopics: ["コンサル1年目の働き方", "提案書の作り方"],
   personality: ["直感・アイデア型", "フラット・気さく"],
@@ -164,10 +174,13 @@ export const users: User[] = [
     ],
     careerOrientation: "スペシャリスト・エキスパート志向",
     expertiseAreas: ["クラウド移行(AWS)", "クラウド移行(GCP)", "セキュリティ"],
+    prevJobs: [
+      { company: "大手SIer（NTT系）", role: "システムエンジニア", years: "2015〜2019", note: "オンプレ基盤の設計・開発が中心。クラウドを武器にしたくてコンサルへ転職" },
+    ],
     projectExperiences: [
-      { industry: "金融・保険", phase: "設計・開発", tech: "AWS" },
-      { industry: "製造", phase: "PMO", tech: "Azure" },
-      { industry: "通信", phase: "移行・テスト", tech: "GCP" },
+      { industry: "金融・保険", phase: "設計・開発", tech: "AWS", description: "メガバンク勘定系のAWS移行。オンプレOracleをRDSに切り替えるアーキ設計を担当。セキュリティ要件の厳しさが想定以上で、ネットワーク分離設計に3ヶ月かけた。" },
+      { industry: "製造", phase: "PMO", tech: "Azure", description: "自動車部品メーカーのDX推進PMO。5社ベンダーをまとめながら進捗・課題を管理。初めてPMとしてクライアントに向き合った案件。" },
+      { industry: "通信", phase: "移行・テスト", tech: "GCP", description: "大手通信キャリアの基盤GCP移行。移行・テストフェーズを担当。膨大なテストケース管理と並行して本番切替計画を策定した。" },
     ],
     talkTopics: ["AWS・クラウド移行の実務", "技術提案の進め方", "エンジニア出身のコンサルキャリア", "副業・資格取得"],
     personality: ["論理・分析派", "丁寧・完璧主義"],
@@ -198,9 +211,9 @@ export const users: User[] = [
     careerOrientation: "マネージャー・リーダー志向",
     expertiseAreas: ["DX戦略立案", "組織変革・チェンジマネジメント", "業務改革・BPR"],
     projectExperiences: [
-      { industry: "製造", phase: "戦略立案", tech: "その他" },
-      { industry: "小売・EC", phase: "要件定義", tech: "Salesforce" },
-      { industry: "金融・保険", phase: "PMO", tech: "その他" },
+      { industry: "製造", phase: "戦略立案", tech: "その他", description: "老舗メーカーのDX中期戦略策定。現場ヒアリング100件超をもとにロードマップを作成。経営層プレゼンを担当し、承認を得た。" },
+      { industry: "小売・EC", phase: "要件定義", tech: "Salesforce", description: "大手小売のCRM刷新プロジェクト。業務要件定義から画面設計まで一気通貫で担当。Salesforce独特の制約に苦しんだ案件。" },
+      { industry: "金融・保険", phase: "PMO", tech: "その他", description: "保険会社の基幹システム刷新PMO。マネージャーへの昇格後、初めてリードしたプロジェクト。チームメンバー15名のマネジメントを経験。" },
     ],
     talkTopics: ["DX推進・変革管理", "クライアントとの関係構築", "マネージャーへの道", "女性のキャリア"],
     personality: ["共感・傾聴型", "フラット・気さく"],
@@ -231,9 +244,9 @@ export const users: User[] = [
     careerOrientation: "マネージャー・リーダー志向",
     expertiseAreas: ["SAP導入・運用", "PMO・プロジェクト管理", "業務改革・BPR"],
     projectExperiences: [
-      { industry: "製造", phase: "設計・開発", tech: "SAP" },
-      { industry: "物流・運輸", phase: "PMO", tech: "SAP" },
-      { industry: "小売・EC", phase: "移行・テスト", tech: "SAP" },
+      { industry: "製造", phase: "設計・開発", tech: "SAP", description: "自動車部品メーカーのSAP S/4HANA導入。設計・開発フェーズで在庫管理モジュールを担当。SAP特有の設定地獄に最初は苦しんだが今では得意分野になった。" },
+      { industry: "物流・運輸", phase: "PMO", tech: "SAP", description: "大手物流会社のSAP導入PMO。東南アジア拠点を含むグローバル展開で、時差とベンダー調整に奔走した4年間。" },
+      { industry: "小売・EC", phase: "移行・テスト", tech: "SAP", description: "百貨店グループのSAP移行プロジェクト。本番切替直前に仕様変更が発生し、徹夜で対応したのは今でも語り草。" },
     ],
     talkTopics: ["SAP導入の実務", "大規模PJ管理", "チームビルディング", "提案〜デリバリーの全体設計"],
     personality: ["論理・分析派", "実行・スピード重視"],
@@ -262,8 +275,8 @@ export const users: User[] = [
     careerOrientation: "スペシャリスト・エキスパート志向",
     expertiseAreas: ["データ分析・BI", "AI・機械学習活用"],
     projectExperiences: [
-      { industry: "小売・EC", phase: "設計・開発", tech: "Python" },
-      { industry: "製造", phase: "戦略立案", tech: "Tableau" },
+      { industry: "小売・EC", phase: "設計・開発", tech: "Python", description: "大手ECモールの購買データ分析基盤の設計・開発。PythonでETLを組みBIまで担当。文系で最初のPythonプロジェクト。夜中に独学した記憶しかない。" },
+      { industry: "製造", phase: "戦略立案", tech: "Tableau", description: "部品メーカーのデータ活用戦略立案。Tableauでダッシュボード設計を提案側で担当。「データがあっても使われない」問題の根深さを体感した案件。" },
     ],
     talkTopics: ["データ分析・可視化の実務", "AI活用提案", "文系出身のデータキャリア", "社内勉強会の作り方"],
     personality: ["直感・アイデア型", "共感・傾聴型"],
@@ -295,9 +308,9 @@ export const users: User[] = [
     careerOrientation: "マネージャー・リーダー志向",
     expertiseAreas: ["DX戦略立案", "提案・プリセールス", "組織変革・チェンジマネジメント"],
     projectExperiences: [
-      { industry: "金融・保険", phase: "戦略立案", tech: "その他" },
-      { industry: "製造", phase: "PMO", tech: "SAP" },
-      { industry: "公共・官公庁", phase: "要件定義", tech: "その他" },
+      { industry: "金融・保険", phase: "戦略立案", tech: "その他", description: "メガバンクのDX戦略策定。コンサルタント時代に初めてクライアントCIOにプレゼンした案件。準備で3徹したが、承認を得たときの達成感は今でも忘れない。" },
+      { industry: "製造", phase: "PMO", tech: "SAP", description: "グローバル製造業の基幹システム刷新PMO。マネージャーとして30名超のチームをリード。「人を動かす」ことの難しさと面白さをここで学んだ。" },
+      { industry: "公共・官公庁", phase: "要件定義", tech: "その他", description: "省庁の行政デジタル化プロジェクト。官民の文化の違いに最初は戸惑ったが、パブリックセクターを動かすやりがいは民間とは別物だった。" },
     ],
     talkTopics: ["パートナーへのキャリア", "事業会社への転職 vs コンサル残留", "金融業界のDX", "人材育成"],
     personality: ["論理・分析派", "実行・スピード重視"],
@@ -325,9 +338,12 @@ export const users: User[] = [
     ],
     careerOrientation: "スペシャリスト・エキスパート志向",
     expertiseAreas: ["セキュリティ", "業務改革・BPR"],
+    prevJobs: [
+      { company: "中堅SIer", role: "システムエンジニア", years: "2022〜2023", note: "インフラ・セキュリティ領域のSE。手を動かす仕事は好きだったけど、上流から関わりたくてコンサルへ転職" },
+    ],
     projectExperiences: [
-      { industry: "金融・保険", phase: "要件定義", tech: "ServiceNow" },
-      { industry: "通信", phase: "運用・保守", tech: "その他" },
+      { industry: "金融・保険", phase: "要件定義", tech: "ServiceNow", description: "地方銀行のセキュリティ運用効率化。ServiceNow導入の要件定義を担当。入社後初の単独案件で、要件定義の難しさをしみじみ体感した。" },
+      { industry: "通信", phase: "運用・保守", tech: "その他", description: "通信キャリアのセキュリティ監視体制の運保サポート。前職のインフラ経験が活きた案件。「コンサルなのに手を動かしすぎ」と先輩に言われた。" },
     ],
     talkTopics: ["セキュリティコンサルの仕事", "他社からの転職経験", "コンサル2年目の壁", "仕事の効率化・ツール活用"],
     personality: ["フラット・気さく", "実行・スピード重視"],

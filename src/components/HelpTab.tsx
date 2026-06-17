@@ -1,6 +1,29 @@
-import { Target, AlertCircle, Zap, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Target, AlertCircle, Zap, ArrowRight, CheckCircle2, Smile } from "lucide-react";
 
 // ─── データ定義 ───────────────────────────────────────────
+
+const USER_BENEFITS = [
+  {
+    emoji: "🤝",
+    title: "プロジェクトの壁を越えた繋がりができる",
+    body: "普段のPJでは出会えない部門・ロールの人と知り合いになれる。社内に「顔見知り」が増えると、仕事のしやすさが変わる。",
+  },
+  {
+    emoji: "💬",
+    title: "「あの人に聞けばいい」が社内に見つかる",
+    body: "困ったときに頼れる人が可視化される。クライアント対応・提案・PJ運営など、経験者から直接話を聞ける。",
+  },
+  {
+    emoji: "🌱",
+    title: "キャリアへの不安を話せる先輩に出会える",
+    body: "「自分はどこを目指せばいい？」「このままでいいのか」——そんな悩みを安心して話せる場が生まれる。",
+  },
+  {
+    emoji: "🏢",
+    title: "社内の壁がなくなっていく",
+    body: "部門・年次・ロールの違いを越えて話せる文化が育つ。気軽に声をかけられる関係が、会社全体を少しずつ変えていく。",
+  },
+];
 
 const GOAL = {
   headline: "離職率の低下",
@@ -166,20 +189,17 @@ export default function HelpTab() {
   return (
     <div className="px-4 md:px-8 pt-4 pb-12 flex flex-col gap-10 max-w-3xl mx-auto">
 
-      {/* ── 1. 目指す状態 ── */}
+      {/* ── 1. ユーザーへの価値（ファーストビュー） ── */}
       <section>
-        <SectionHeader icon={<Target size={16} />} label="目指す状態" />
-        <div className="bg-indigo-600 rounded-2xl p-5 text-white">
-          <p className="text-xl font-bold mb-1">{GOAL.headline}</p>
-          <p className="text-indigo-200 text-sm mb-4">{GOAL.description}</p>
-          <div className="flex flex-col gap-2">
-            {GOAL.conditions.map((c, i) => (
-              <div key={i} className="flex items-start gap-2">
-                <CheckCircle2 size={15} className="text-indigo-300 mt-0.5 shrink-0" />
-                <span className="text-sm text-indigo-100">{c}</span>
-              </div>
-            ))}
-          </div>
+        <SectionHeader icon={<Smile size={16} />} label="ひとつなぎ で変わること" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {USER_BENEFITS.map((b) => (
+            <div key={b.title} className="bg-white border-2 border-green-50 rounded-2xl p-4 hover:border-green-200 transition-colors">
+              <div className="text-2xl mb-2">{b.emoji}</div>
+              <p className="font-semibold text-gray-900 text-sm mb-1.5">{b.title}</p>
+              <p className="text-xs text-gray-500 leading-relaxed">{b.body}</p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -227,7 +247,24 @@ export default function HelpTab() {
         </div>
       </section>
 
-      {/* ── 4. 使い方 ── */}
+      {/* ── 4. 経営層・導入担当者向け（管理者向け） ── */}
+      <section>
+        <SectionHeader icon={<Target size={16} />} label="導入担当者・経営層向け：目指す状態" />
+        <div className="bg-indigo-600 rounded-2xl p-5 text-white">
+          <p className="text-xl font-bold mb-1">{GOAL.headline}</p>
+          <p className="text-indigo-200 text-sm mb-4">{GOAL.description}</p>
+          <div className="flex flex-col gap-2">
+            {GOAL.conditions.map((c, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <CheckCircle2 size={15} className="text-indigo-300 mt-0.5 shrink-0" />
+                <span className="text-sm text-indigo-100">{c}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 6. 使い方 ── */}
       <section>
         <SectionHeader icon={<ArrowRight size={16} />} label="使い方" />
         <div className="flex flex-col gap-0">
@@ -255,7 +292,7 @@ export default function HelpTab() {
         </div>
       </section>
 
-      {/* ── 5. 変更履歴 ── */}
+      {/* ── 7. 変更履歴 ── */}
       <section>
         <SectionHeader icon={<span className="text-sm">📋</span>} label="変更履歴" />
         <div className="flex flex-col gap-4">

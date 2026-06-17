@@ -1,4 +1,5 @@
-import { X } from "lucide-react";
+import { useState } from "react";
+import { X, ChevronDown } from "lucide-react";
 import { STATUS_OPTIONS } from "../data/mock";
 import type { User } from "../data/mock";
 
@@ -11,6 +12,8 @@ function Chip({ label, color }: { label: string; color: string }) {
 export default function ProfileModal({ user, onClose, onRequest }: Props) {
   const st = STATUS_OPTIONS.find((s) => s.id === user.status);
   const isDnd = user.status === "dnd";
+  const [expandedProject, setExpandedProject] = useState<number | null>(null);
+
   return (
     <div className="fixed inset-0 bg-black/40 flex items-end md:items-center justify-center z-50 md:p-6" onClick={onClose}>
       <div
@@ -21,7 +24,7 @@ export default function ProfileModal({ user, onClose, onRequest }: Props) {
         <div className="sticky top-0 z-10 bg-white rounded-t-3xl pt-3 px-5 pb-4 border-b border-gray-100">
           <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-3 md:hidden" />
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-rose-100 to-orange-100 flex items-center justify-center text-4xl shrink-0">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-100 to-lime-100 flex items-center justify-center text-4xl shrink-0">
               {user.avatar}
             </div>
             <div className="flex-1 min-w-0">
@@ -54,8 +57,30 @@ export default function ProfileModal({ user, onClose, onRequest }: Props) {
           {/* ── 自己紹介 ── */}
           <p className="text-sm text-gray-600 leading-relaxed">{user.bio}</p>
 
-          {/* ── キャリア（ラベルなし） ── */}
+          {/* ── キャリア ── */}
           <div className="flex flex-col gap-2">
+            {/* 前職 */}
+            {user.prevJobs && user.prevJobs.length > 0 && (
+              <div className="flex flex-col gap-1.5 mb-1">
+                {user.prevJobs.map((job, i) => (
+                  <div key={i} className="flex items-start gap-2.5 text-xs text-gray-500">
+                    <span className="shrink-0 mt-0.5 w-1.5 h-1.5 rounded-full bg-gray-300 mt-1.5" />
+                    <span>
+                      <span className="font-medium text-gray-600">{job.company}</span>
+                      <span className="mx-1 text-gray-300">·</span>
+                      {job.role}
+                      <span className="mx-1 text-gray-300">·</span>
+                      {job.years}
+                      {job.note && (
+                        <span className="block text-gray-400 mt-0.5 leading-relaxed">{job.note}</span>
+                      )}
+                    </span>
+                  </div>
+                ))}
+                <div className="ml-[7px] w-0.5 h-3 bg-gray-200" />
+              </div>
+            )}
+            {/* 現職キャリアパス */}
             <div className="flex flex-wrap items-center gap-1.5">
               {user.careerPath.map((step, i) => (
                 <>
@@ -89,15 +114,41 @@ export default function ProfileModal({ user, onClose, onRequest }: Props) {
             </div>
           </div>
 
-          {/* ── 経験した仕事 ── */}
+          {/* ── 経験した仕事（クリックで詳細展開） ── */}
           <div>
             <p className="text-sm font-semibold text-gray-800 mb-2.5">💼 経験した仕事</p>
             <div className="flex flex-col gap-1.5">
-              {user.projectExperiences.map((exp, i) => (
-                <div key={i} className="bg-gray-50 rounded-xl px-3 py-2 text-xs text-gray-600">
-                  {exp.industry} · {exp.phase} · <span className="text-emerald-600 font-medium">{exp.tech}</span>
-                </div>
-              ))}
+              {user.projectExperiences.map((exp, i) => {
+                const isOpen = expandedProject === i;
+                const hasDesc = !!exp.description;
+                return (
+                  <div key={i}>
+                    <button
+                      onClick={() => hasDesc && setExpandedProject(isOpen ? null : i)}
+                      className={`w-full bg-gray-50 rounded-xl px-3 py-2 text-xs text-gray-600 text-left transition-colors ${
+                        hasDesc ? "hover:bg-green-50 cursor-pointer" : "cursor-default"
+                      } ${isOpen ? "bg-green-50 rounded-b-none" : ""}`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span>
+                          {exp.industry} · {exp.phase} · <span className="text-emerald-600 font-medium">{exp.tech}</span>
+                        </span>
+                        {hasDesc && (
+                          <ChevronDown
+                            size={14}
+                            className={`shrink-0 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                          />
+                        )}
+                      </div>
+                    </button>
+                    {isOpen && exp.description && (
+                      <div className="bg-green-50 rounded-b-xl px-3 pb-3 pt-1.5 text-xs text-gray-600 leading-relaxed border-t border-green-100">
+                        {exp.description}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
             <div className="flex flex-wrap gap-1.5 mt-2">
               {user.expertiseAreas.map((t) => (
@@ -145,7 +196,7 @@ export default function ProfileModal({ user, onClose, onRequest }: Props) {
 
           {/* ── 実績 + 会いやすい時間帯 ── */}
           <p className="text-sm text-gray-500">
-            💬 これまで <strong className="text-rose-500">{user.sessionCount}人</strong> と話しました
+            💬 これまで <strong className="text-green-600">{user.sessionCount}人</strong> と話しました
             <span className="mx-2 text-gray-300">·</span>
             {user.meetStyle}
           </p>
