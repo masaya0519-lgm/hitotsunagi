@@ -72,6 +72,20 @@ export type Session = {
   createdAt: string;
 };
 
+export type ProjectPosting = {
+  id: string;
+  managerId: string;
+  projectName: string;
+  overview: string;
+  industry: string;
+  phase: string;
+  duration: string;
+  headcount: number;
+  requirements: string[];
+  createdAt: string;
+  status: "open" | "closed";
+};
+
 export type Boshuu = {
   id: string;
   authorId: string;
@@ -427,6 +441,63 @@ export const boshuuList: Boshuu[] = [
     timePreference: "ランチ派",
     createdAt: "2026-06-09",
     respondentCount: 2,
+    status: "open",
+  },
+];
+
+// ─── PJ公募データ ─────────────────────────────────────────
+
+export const projectPostings: ProjectPosting[] = [
+  {
+    id: "pj1",
+    managerId: "2",
+    projectName: "大手食品メーカー DX戦略策定",
+    overview: "老舗食品メーカーの中期DX戦略を経営層と一緒につくるPJ。現場ヒアリングから経営層プレゼンまで一気通貫で担当。",
+    industry: "製造",
+    phase: "戦略立案",
+    duration: "2026年7月〜12月（6ヶ月）",
+    headcount: 2,
+    requirements: ["DX戦略立案", "業務改革・BPR"],
+    createdAt: "2026-06-15",
+    status: "open",
+  },
+  {
+    id: "pj2",
+    managerId: "1",
+    projectName: "メガバンク クラウド移行 第2フェーズ",
+    overview: "昨年完了したAWS移行に続く第2フェーズ。残存システムのGCP移行とマルチクラウド管理基盤の構築を担当します。",
+    industry: "金融・保険",
+    phase: "設計・開発",
+    duration: "2026年8月〜2027年3月（8ヶ月）",
+    headcount: 3,
+    requirements: ["クラウド移行(GCP)", "クラウド移行(AWS)", "セキュリティ"],
+    createdAt: "2026-06-14",
+    status: "open",
+  },
+  {
+    id: "pj3",
+    managerId: "3",
+    projectName: "グローバル製造業 SAP S/4HANA 導入",
+    overview: "東南アジア5拠点を含むグローバルSAP導入。PMOとして全体管理に加え、製造モジュールの設計・テストを担当。",
+    industry: "製造",
+    phase: "PMO",
+    duration: "2026年9月〜2028年3月（18ヶ月）",
+    headcount: 4,
+    requirements: ["SAP導入・運用", "PMO・プロジェクト管理"],
+    createdAt: "2026-06-12",
+    status: "open",
+  },
+  {
+    id: "pj4",
+    managerId: "5",
+    projectName: "大手損保 基幹システム刷新 PMO",
+    overview: "業界大手損保の基幹システム刷新PMO支援。クライアントCIOに直接向き合う機会あり。シニア〜マネージャー層歓迎。",
+    industry: "金融・保険",
+    phase: "PMO",
+    duration: "2026年7月〜2027年9月（15ヶ月）",
+    headcount: 2,
+    requirements: ["PMO・プロジェクト管理", "DX戦略立案"],
+    createdAt: "2026-06-10",
     status: "open",
   },
 ];

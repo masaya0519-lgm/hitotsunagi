@@ -1,22 +1,21 @@
 import { useState } from "react";
-import { Plus, X, Check, Users, Clock, ChevronRight, Megaphone } from "lucide-react";
-import { boshuuList, users, ME, EXPERTISE_AREAS, MEET_STYLES } from "../data/mock";
-import type { Boshuu, User } from "../data/mock";
+import { Plus, X, Check, Users, Clock, ChevronRight, Megaphone, Briefcase, Building2 } from "lucide-react";
+import { boshuuList, projectPostings, users, ME, EXPERTISE_AREAS, MEET_STYLES, INDUSTRIES, PHASES } from "../data/mock";
+import type { Boshuu, ProjectPosting, User } from "../data/mock";
 import SlackMock from "./SlackMock";
 
-// ─── ユーザー解決ヘルパー ────────────────────────────────
+type Mode = "boshuu" | "project";
+
+// ─── ユーザー解決 ─────────────────────────────────────────
 
 function resolveUser(id: string): User {
   if (id === "me") return ME;
   return users.find((u) => u.id === id) ?? ME;
 }
 
-// ─── 投稿作成モーダル ────────────────────────────────────
+// ─── OB訪問・相談募集 作成モーダル ───────────────────────
 
-type CreateModalProps = {
-  onClose: () => void;
-  onCreate: (post: Boshuu) => void;
-};
+type CreateModalProps = { onClose: () => void; onCreate: (post: Boshuu) => void };
 
 function CreateModal({ onClose, onCreate }: CreateModalProps) {
   const [title, setTitle] = useState("");
@@ -46,101 +45,47 @@ function CreateModal({ onClose, onCreate }: CreateModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50 md:p-6" onClick={onClose}>
-      <div
-        className="bg-white w-full md:max-w-lg md:rounded-3xl rounded-t-3xl max-h-[92vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="bg-white w-full md:max-w-lg md:rounded-3xl rounded-t-3xl max-h-[92vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="sticky top-0 bg-white pt-4 px-5 pb-3 border-b border-gray-100">
           <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4 md:hidden" />
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base font-bold text-gray-900">募集を投稿する</h2>
+              <h2 className="text-base font-bold text-gray-900">相談募集を投稿する</h2>
               <p className="text-xs text-gray-400">こんな人に話を聞いてほしい、を発信しよう</p>
             </div>
             <button onClick={onClose} className="p-1 text-gray-400"><X size={20} /></button>
           </div>
         </div>
-
         <div className="px-5 py-4 flex flex-col gap-5">
-          {/* タイトル */}
           <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-2">
-              何を話したいですか？ <span className="text-red-400">*</span>
-            </label>
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="例：初めてのPL、心構えを教えてください"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
-            />
+            <label className="text-sm font-semibold text-gray-700 block mb-2">何を話したいですか？ <span className="text-red-400">*</span></label>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="例：初めてのPL、心構えを教えてください" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-300" />
           </div>
-
-          {/* 求めるスキル・経験 */}
           <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-2">
-              どんな経験を持つ人を探していますか？
-            </label>
+            <label className="text-sm font-semibold text-gray-700 block mb-2">どんな経験を持つ人を探していますか？</label>
             <div className="flex flex-wrap gap-1.5">
               {EXPERTISE_AREAS.map((t) => (
-                <button
-                  key={t}
-                  onClick={() => toggleTag(t)}
-                  className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border transition-all ${
-                    tags.includes(t)
-                      ? "bg-rose-600 text-white border-rose-600"
-                      : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
-                  }`}
-                >
-                  {tags.includes(t) ? <Check size={10} /> : <Plus size={10} />}
-                  {t}
+                <button key={t} onClick={() => toggleTag(t)} className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border transition-all ${tags.includes(t) ? "bg-green-500 text-white border-green-500" : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"}`}>
+                  {tags.includes(t) ? <Check size={10} /> : <Plus size={10} />}{t}
                 </button>
               ))}
             </div>
           </div>
-
-          {/* 詳細 */}
           <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-2">
-              詳細（任意）
-            </label>
-            <textarea
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              placeholder="背景や聞きたいことをもう少し詳しく書くと応じてもらいやすくなります"
-              rows={3}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300 resize-none"
-            />
+            <label className="text-sm font-semibold text-gray-700 block mb-2">詳細（任意）</label>
+            <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="背景や聞きたいことをもう少し詳しく書くと応じてもらいやすくなります" rows={3} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 resize-none" />
           </div>
-
-          {/* 希望時間帯 */}
           <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-2">
-              希望の時間帯 <span className="text-red-400">*</span>
-            </label>
+            <label className="text-sm font-semibold text-gray-700 block mb-2">希望の時間帯 <span className="text-red-400">*</span></label>
             <div className="flex flex-wrap gap-2">
               {MEET_STYLES.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setTime(s)}
-                  className={`text-sm px-4 py-2 rounded-full border transition-all ${
-                    time === s
-                      ? "bg-rose-600 text-white border-rose-600"
-                      : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
-                  }`}
-                >
-                  {s}
-                </button>
+                <button key={s} onClick={() => setTime(s)} className={`text-sm px-4 py-2 rounded-full border transition-all ${time === s ? "bg-green-500 text-white border-green-500" : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"}`}>{s}</button>
               ))}
             </div>
           </div>
         </div>
-
         <div className="px-5 pb-8 pt-2">
-          <button
-            onClick={handleSubmit}
-            disabled={!title.trim() || !time}
-            className="w-full bg-gradient-to-r from-rose-500 to-orange-400 text-white font-bold py-4 rounded-2xl hover:from-rose-600 hover:to-orange-500 transition-all text-base shadow-md shadow-rose-200/50 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
-          >
+          <button onClick={handleSubmit} disabled={!title.trim() || !time} className="btn-ac w-full bg-green-500 text-white font-bold py-4 rounded-2xl hover:bg-green-600 text-base disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none">
             募集を投稿する
           </button>
         </div>
@@ -149,51 +94,107 @@ function CreateModal({ onClose, onCreate }: CreateModalProps) {
   );
 }
 
-// ─── 声をかける確認モーダル ───────────────────────────────────
+// ─── PJ公募 作成モーダル ──────────────────────────────────
 
-type RespondModalProps = {
-  post: Boshuu;
-  onClose: () => void;
-  onConfirm: () => void;
-};
+type CreateProjectModalProps = { onClose: () => void; onCreate: (p: ProjectPosting) => void };
 
-function RespondModal({ post, onClose, onConfirm }: RespondModalProps) {
-  const author = resolveUser(post.authorId);
+function CreateProjectModal({ onClose, onCreate }: CreateProjectModalProps) {
+  const [projectName, setProjectName] = useState("");
+  const [overview, setOverview] = useState("");
+  const [industry, setIndustry] = useState("");
+  const [phase, setPhase] = useState("");
+  const [duration, setDuration] = useState("");
+  const [headcount, setHeadcount] = useState("1");
+  const [requirements, setRequirements] = useState<string[]>([]);
+
+  function toggleReq(t: string) {
+    setRequirements((prev) => prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]);
+  }
+
+  const canSubmit = projectName.trim() && overview.trim() && industry && phase && duration;
+
+  function handleSubmit() {
+    if (!canSubmit) return;
+    onCreate({
+      id: `pj${Date.now()}`,
+      managerId: "me",
+      projectName: projectName.trim(),
+      overview: overview.trim(),
+      industry,
+      phase,
+      duration,
+      headcount: Number(headcount),
+      requirements,
+      createdAt: new Date().toISOString().slice(0, 10),
+      status: "open",
+    });
+    onClose();
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50 md:p-6" onClick={onClose}>
-      <div
-        className="bg-white w-full md:max-w-sm md:rounded-3xl rounded-t-3xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="pt-4 px-5 pb-3">
+      <div className="bg-white w-full md:max-w-lg md:rounded-3xl rounded-t-3xl max-h-[92vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="sticky top-0 bg-white pt-4 px-5 pb-3 border-b border-gray-100">
           <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4 md:hidden" />
-          <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 md:block hidden"><X size={20} /></button>
-        </div>
-        <div className="px-5 pb-2 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-100 to-purple-100 flex items-center justify-center text-3xl mx-auto mb-3">
-            {author.avatar}
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-bold text-gray-900">PJメンバーを募集する</h2>
+              <p className="text-xs text-gray-400">プロジェクトの概要と求めるスキルを登録しよう</p>
+            </div>
+            <button onClick={onClose} className="p-1 text-gray-400"><X size={20} /></button>
           </div>
-          <h3 className="font-bold text-gray-900 mb-1">
-            「{post.title.length > 20 ? post.title.slice(0, 20) + "…" : post.title}」に声をかける
-          </h3>
-          <p className="text-sm text-gray-500 mb-1">{author.name}さんへ</p>
-          <p className="text-xs text-gray-400 bg-gray-50 rounded-xl p-3 mt-3 text-left leading-relaxed">
-            声をかけると {author.name}さんにSlackで通知が届きます。日程は直接Slackで調整できます。
-          </p>
         </div>
-        <div className="px-5 pb-8 pt-4 flex flex-col gap-2">
-          <button
-            onClick={onConfirm}
-            className="w-full bg-gradient-to-r from-rose-500 to-orange-400 text-white font-bold py-4 rounded-2xl hover:from-rose-600 hover:to-orange-500 transition-all shadow-md shadow-rose-200/50"
-          >
-            声をかける
-          </button>
-          <button
-            onClick={onClose}
-            className="w-full text-gray-500 font-medium py-3 rounded-2xl hover:bg-gray-50 transition-colors text-sm"
-          >
-            キャンセル
+        <div className="px-5 py-4 flex flex-col gap-5">
+          <div>
+            <label className="text-sm font-semibold text-gray-700 block mb-2">プロジェクト名 <span className="text-red-400">*</span></label>
+            <input value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="例：大手製造業 DX戦略策定" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-300" />
+          </div>
+          <div>
+            <label className="text-sm font-semibold text-gray-700 block mb-2">概要 <span className="text-red-400">*</span></label>
+            <textarea value={overview} onChange={(e) => setOverview(e.target.value)} placeholder="どんなプロジェクトか、何を担当してもらうかを書いてください" rows={3} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 resize-none" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-sm font-semibold text-gray-700 block mb-2">業界 <span className="text-red-400">*</span></label>
+              <select value={industry} onChange={(e) => setIndustry(e.target.value)} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
+                <option value="">選択</option>
+                {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-semibold text-gray-700 block mb-2">フェーズ <span className="text-red-400">*</span></label>
+              <select value={phase} onChange={(e) => setPhase(e.target.value)} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
+                <option value="">選択</option>
+                {PHASES.map((p) => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-sm font-semibold text-gray-700 block mb-2">期間 <span className="text-red-400">*</span></label>
+              <input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="例：6ヶ月" className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300" />
+            </div>
+            <div>
+              <label className="text-sm font-semibold text-gray-700 block mb-2">募集人数</label>
+              <select value={headcount} onChange={(e) => setHeadcount(e.target.value)} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
+                {[1,2,3,4,5].map((n) => <option key={n} value={n}>{n}名</option>)}
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="text-sm font-semibold text-gray-700 block mb-2">求めるスキル・資格</label>
+            <div className="flex flex-wrap gap-1.5">
+              {EXPERTISE_AREAS.map((t) => (
+                <button key={t} onClick={() => toggleReq(t)} className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border transition-all ${requirements.includes(t) ? "bg-green-500 text-white border-green-500" : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"}`}>
+                  {requirements.includes(t) ? <Check size={10} /> : <Plus size={10} />}{t}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="px-5 pb-8 pt-2">
+          <button onClick={handleSubmit} disabled={!canSubmit} className="btn-ac w-full bg-green-500 text-white font-bold py-4 rounded-2xl hover:bg-green-600 text-base disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none">
+            募集を登録する
           </button>
         </div>
       </div>
@@ -201,94 +202,164 @@ function RespondModal({ post, onClose, onConfirm }: RespondModalProps) {
   );
 }
 
-// ─── 募集カード ───────────────────────────────────────────
+// ─── OB訪問 声かけ確認モーダル ───────────────────────────
 
-type CardProps = {
-  post: Boshuu;
-  responded: boolean;
-  onRespond: () => void;
-  onClose?: () => void;
-};
+type RespondModalProps = { post: Boshuu; onClose: () => void; onConfirm: () => void };
 
-function BoshuuCard({ post, responded, onRespond, onClose }: CardProps) {
+function RespondModal({ post, onClose, onConfirm }: RespondModalProps) {
+  const author = resolveUser(post.authorId);
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50 md:p-6" onClick={onClose}>
+      <div className="bg-white w-full md:max-w-sm md:rounded-3xl rounded-t-3xl" onClick={(e) => e.stopPropagation()}>
+        <div className="pt-4 px-5 pb-2 text-center">
+          <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4 md:hidden" />
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-100 to-lime-100 flex items-center justify-center text-3xl mx-auto mb-3">{author.avatar}</div>
+          <h3 className="font-bold text-gray-900 mb-1">「{post.title.length > 20 ? post.title.slice(0, 20) + "…" : post.title}」に声をかける</h3>
+          <p className="text-sm text-gray-500 mb-1">{author.name}さんへ</p>
+          <p className="text-xs text-gray-400 bg-gray-50 rounded-xl p-3 mt-3 text-left leading-relaxed">声をかけると {author.name}さんにSlackで通知が届きます。日程は直接Slackで調整できます。</p>
+        </div>
+        <div className="px-5 pb-8 pt-4 flex flex-col gap-2">
+          <button onClick={onConfirm} className="btn-ac w-full bg-green-500 text-white font-bold py-4 rounded-2xl hover:bg-green-600">声をかける</button>
+          <button onClick={onClose} className="w-full text-gray-500 font-medium py-3 rounded-2xl hover:bg-gray-50 transition-colors text-sm">キャンセル</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── PJ参加 手を挙げる確認モーダル ───────────────────────
+
+type RaiseHandModalProps = { post: ProjectPosting; onClose: () => void; onConfirm: () => void };
+
+function RaiseHandModal({ post, onClose, onConfirm }: RaiseHandModalProps) {
+  const manager = resolveUser(post.managerId);
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50 md:p-6" onClick={onClose}>
+      <div className="bg-white w-full md:max-w-sm md:rounded-3xl rounded-t-3xl" onClick={(e) => e.stopPropagation()}>
+        <div className="pt-4 px-5 pb-2 text-center">
+          <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4 md:hidden" />
+          <div className="text-3xl mb-2">🙋</div>
+          <h3 className="font-bold text-gray-900 mb-1">「{post.projectName}」に手を挙げる</h3>
+          <p className="text-sm text-gray-500 mb-1">PM: {manager.name}さんへ</p>
+          <p className="text-xs text-gray-400 bg-gray-50 rounded-xl p-3 mt-3 text-left leading-relaxed">{manager.name}さんにSlackで通知が届きます。詳細はSlackで直接確認できます。</p>
+        </div>
+        <div className="px-5 pb-8 pt-4 flex flex-col gap-2">
+          <button onClick={onConfirm} className="btn-ac w-full bg-green-500 text-white font-bold py-4 rounded-2xl hover:bg-green-600">手を挙げる 🙋</button>
+          <button onClick={onClose} className="w-full text-gray-500 font-medium py-3 rounded-2xl hover:bg-gray-50 transition-colors text-sm">キャンセル</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── OB訪問カード ─────────────────────────────────────────
+
+type BoshuuCardProps = { post: Boshuu; responded: boolean; onRespond: () => void; onClose?: () => void };
+
+function BoshuuCard({ post, responded, onRespond, onClose }: BoshuuCardProps) {
   const author = resolveUser(post.authorId);
   const isMe = post.authorId === "me";
-
   return (
-    <div className={`bg-white rounded-2xl shadow-sm p-5 flex flex-col gap-3 border ${
-      isMe ? "border-rose-200" : "border-transparent"
-    }`}>
-      {/* ヘッダー */}
+    <div className={`bg-white rounded-2xl p-5 flex flex-col gap-3 border ${isMe ? "border-green-200" : "border-gray-100"}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-100 to-purple-100 flex items-center justify-center text-xl shrink-0">
-            {author.avatar}
-          </div>
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-100 to-lime-100 flex items-center justify-center text-xl shrink-0">{author.avatar}</div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="font-semibold text-sm text-gray-900">{author.name}</span>
-              {isMe && (
-                <span className="text-[10px] bg-rose-100 text-rose-600 px-1.5 py-0.5 rounded-md font-medium">
-                  自分の募集
-                </span>
-              )}
+              {isMe && <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-md font-medium">自分の募集</span>}
             </div>
-            <p className="text-xs text-gray-500">{author.department} · {author.role} · {author.yearsAtCompany}年目</p>
+            <p className="text-xs text-gray-500">{author.department} · {author.role}</p>
           </div>
         </div>
         {isMe && onClose && (
-          <button
-            onClick={onClose}
-            className="text-xs text-gray-400 hover:text-gray-600 shrink-0 flex items-center gap-1 border border-gray-200 rounded-lg px-2 py-1"
-          >
+          <button onClick={onClose} className="text-xs text-gray-400 hover:text-gray-600 shrink-0 flex items-center gap-1 border border-gray-200 rounded-lg px-2 py-1">
+            <X size={10} /> 締め切る
+          </button>
+        )}
+      </div>
+      <h3 className="font-semibold text-gray-900 text-sm leading-snug">{post.title}</h3>
+      {post.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {post.tags.map((t) => <span key={t} className="text-xs bg-green-50 text-green-700 px-2.5 py-1 rounded-full">{t}</span>)}
+        </div>
+      )}
+      {post.body && <p className="text-xs text-gray-600 leading-relaxed line-clamp-3">{post.body}</p>}
+      <div className="flex items-center justify-between pt-1 border-t border-gray-100">
+        <div className="flex items-center gap-3 text-xs text-gray-400">
+          <span className="flex items-center gap-1"><Clock size={11} />{post.timePreference}</span>
+          <span className="flex items-center gap-1"><Users size={11} />{post.respondentCount + (responded ? 1 : 0)}人が応じました</span>
+        </div>
+        {!isMe && (
+          responded
+            ? <span className="flex items-center gap-1 text-xs text-green-600 font-medium bg-green-50 px-3 py-1.5 rounded-full"><Check size={11} /> 応じました</span>
+            : <button onClick={onRespond} className="flex items-center gap-1 text-xs text-green-700 font-medium bg-green-50 hover:bg-green-100 transition-colors px-3 py-1.5 rounded-full">声をかける <ChevronRight size={11} /></button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── PJ公募カード ─────────────────────────────────────────
+
+type ProjectCardProps = { post: ProjectPosting; raised: boolean; onRaise: () => void; onClose?: () => void };
+
+function ProjectCard({ post, raised, onRaise, onClose }: ProjectCardProps) {
+  const manager = resolveUser(post.managerId);
+  const isMe = post.managerId === "me";
+  return (
+    <div className={`bg-white rounded-2xl p-5 flex flex-col gap-3 border ${isMe ? "border-green-200" : "border-gray-100"}`}>
+      {/* PM情報 */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-100 to-lime-100 flex items-center justify-center text-xl shrink-0">{manager.avatar}</div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="font-semibold text-sm text-gray-900">{manager.name}</span>
+              {isMe && <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-md font-medium">自分の募集</span>}
+            </div>
+            <p className="text-xs text-gray-500">{manager.role}</p>
+          </div>
+        </div>
+        {isMe && onClose && (
+          <button onClick={onClose} className="text-xs text-gray-400 hover:text-gray-600 shrink-0 flex items-center gap-1 border border-gray-200 rounded-lg px-2 py-1">
             <X size={10} /> 締め切る
           </button>
         )}
       </div>
 
-      {/* タイトル */}
-      <h3 className="font-semibold text-gray-900 text-sm leading-snug">{post.title}</h3>
+      {/* プロジェクト名 */}
+      <h3 className="font-bold text-gray-900 text-sm leading-snug">{post.projectName}</h3>
 
-      {/* タグ */}
-      {post.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {post.tags.map((t) => (
-            <span key={t} className="text-xs bg-rose-50 text-rose-700 px-2.5 py-1 rounded-full">{t}</span>
-          ))}
+      {/* 業界・フェーズ・期間 */}
+      <div className="flex flex-wrap gap-1.5">
+        <span className="text-xs bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full font-medium flex items-center gap-1">
+          <Building2 size={10} />{post.industry}
+        </span>
+        <span className="text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-medium">{post.phase}</span>
+        <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">{post.duration}</span>
+      </div>
+
+      {/* 概要 */}
+      <p className="text-xs text-gray-600 leading-relaxed">{post.overview}</p>
+
+      {/* 求めるスキル */}
+      {post.requirements.length > 0 && (
+        <div>
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1.5">求めるスキル</p>
+          <div className="flex flex-wrap gap-1.5">
+            {post.requirements.map((r) => <span key={r} className="text-xs bg-green-50 text-green-700 px-2.5 py-1 rounded-full">{r}</span>)}
+          </div>
         </div>
-      )}
-
-      {/* 本文 */}
-      {post.body && (
-        <p className="text-xs text-gray-600 leading-relaxed line-clamp-3">{post.body}</p>
       )}
 
       {/* フッター */}
       <div className="flex items-center justify-between pt-1 border-t border-gray-100">
-        <div className="flex items-center gap-3 text-xs text-gray-400">
-          <span className="flex items-center gap-1">
-            <Clock size={11} />
-            {post.timePreference}
-          </span>
-          <span className="flex items-center gap-1">
-            <Users size={11} />
-            {post.respondentCount + (responded ? 1 : 0)}人が応じました
-          </span>
-        </div>
-
+        <span className="flex items-center gap-1 text-xs text-gray-400"><Users size={11} />募集{post.headcount}名</span>
         {!isMe && (
-          responded ? (
-            <span className="flex items-center gap-1 text-xs text-emerald-600 font-medium bg-emerald-50 px-3 py-1.5 rounded-full">
-              <Check size={11} /> 応じました
-            </span>
-          ) : (
-            <button
-              onClick={onRespond}
-              className="flex items-center gap-1 text-xs text-rose-600 font-medium bg-rose-50 hover:bg-rose-100 transition-colors px-3 py-1.5 rounded-full"
-            >
-              声をかける <ChevronRight size={11} />
-            </button>
-          )
+          raised
+            ? <span className="flex items-center gap-1 text-xs text-green-600 font-medium bg-green-50 px-3 py-1.5 rounded-full"><Check size={11} /> 手を挙げました</span>
+            : <button onClick={onRaise} className="flex items-center gap-1 text-xs text-green-700 font-medium bg-green-50 hover:bg-green-100 transition-colors px-3 py-1.5 rounded-full">手を挙げる 🙋 <ChevronRight size={11} /></button>
         )}
       </div>
     </div>
@@ -298,120 +369,109 @@ function BoshuuCard({ post, responded, onRespond, onClose }: CardProps) {
 // ─── メインコンポーネント ─────────────────────────────────
 
 export default function BoshuuTab() {
-  const [posts, setPosts]         = useState<Boshuu[]>([...boshuuList]);
+  const [mode, setMode] = useState<Mode>("boshuu");
+
+  // OB訪問・相談募集
+  const [posts, setPosts] = useState<Boshuu[]>([...boshuuList]);
   const [respondedIds, setRespondedIds] = useState<Set<string>>(new Set());
   const [showCreate, setShowCreate] = useState(false);
   const [respondTarget, setRespondTarget] = useState<Boshuu | null>(null);
   const [slackTarget, setSlackTarget] = useState<{ post: Boshuu; author: User } | null>(null);
   const [filterTag, setFilterTag] = useState<string | null>(null);
 
+  // PJ公募
+  const [projects, setProjects] = useState<ProjectPosting[]>([...projectPostings]);
+  const [raisedIds, setRaisedIds] = useState<Set<string>>(new Set());
+  const [showCreateProject, setShowCreateProject] = useState(false);
+  const [raiseTarget, setRaiseTarget] = useState<ProjectPosting | null>(null);
+  const [projectSlackTarget, setProjectSlackTarget] = useState<{ post: ProjectPosting; manager: User } | null>(null);
+
   const allTags = Array.from(new Set(posts.flatMap((p) => p.tags)));
-
-  const displayed = filterTag
-    ? posts.filter((p) => p.tags.includes(filterTag) && p.status === "open")
-    : posts.filter((p) => p.status === "open");
-
-  function handleCreate(post: Boshuu) {
-    setPosts((prev) => [post, ...prev]);
-  }
-
-  function handleClose(id: string) {
-    setPosts((prev) => prev.map((p) => p.id === id ? { ...p, status: "closed" as const } : p));
-  }
+  const displayedPosts = (filterTag ? posts.filter((p) => p.tags.includes(filterTag) && p.status === "open") : posts.filter((p) => p.status === "open"));
+  const displayedProjects = projects.filter((p) => p.status === "open");
 
   function handleConfirmRespond() {
     if (!respondTarget) return;
     setRespondedIds((prev) => new Set([...prev, respondTarget.id]));
     const author = resolveUser(respondTarget.authorId);
-    setRespondTarget(null);
     setSlackTarget({ post: respondTarget, author });
+    setRespondTarget(null);
+  }
+
+  function handleConfirmRaise() {
+    if (!raiseTarget) return;
+    setRaisedIds((prev) => new Set([...prev, raiseTarget.id]));
+    const manager = resolveUser(raiseTarget.managerId);
+    setProjectSlackTarget({ post: raiseTarget, manager });
+    setRaiseTarget(null);
   }
 
   return (
     <div className="px-4 md:px-6 pt-4 pb-20 flex flex-col gap-4 max-w-2xl mx-auto">
 
-      {/* ── ヘッダー＋投稿ボタン ── */}
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs text-gray-400 mt-0.5">{displayed.length}件の募集</p>
-        </div>
-        <button
-          onClick={() => setShowCreate(true)}
-          className="flex items-center gap-1.5 text-sm font-semibold bg-gradient-to-r from-rose-500 to-orange-400 text-white px-4 py-2 rounded-xl hover:from-rose-600 hover:to-orange-500 transition-all shadow-sm"
-        >
-          <Plus size={15} /> 募集を出す
+      {/* ── モード切替 ── */}
+      <div className="flex bg-green-50/60 rounded-xl p-1 gap-1">
+        <button onClick={() => setMode("boshuu")} className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-semibold transition-all ${mode === "boshuu" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+          <Megaphone size={14} /> 相談・OB訪問
+        </button>
+        <button onClick={() => setMode("project")} className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-semibold transition-all ${mode === "project" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+          <Briefcase size={14} /> PJメンバー募集
         </button>
       </div>
 
-      {/* ── タグフィルター ── */}
-      <div className="flex gap-1.5 flex-wrap">
-        <button
-          onClick={() => setFilterTag(null)}
-          className={`text-xs px-3 py-1.5 rounded-full border transition-all ${
-            !filterTag ? "bg-gray-800 text-white border-gray-800" : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
-          }`}
-        >
-          すべて
-        </button>
-        {allTags.map((t) => (
-          <button
-            key={t}
-            onClick={() => setFilterTag(filterTag === t ? null : t)}
-            className={`text-xs px-3 py-1.5 rounded-full border transition-all ${
-              filterTag === t ? "bg-rose-600 text-white border-rose-600" : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
-            }`}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
-
-      {/* ── 空の状態 ── */}
-      {displayed.length === 0 && (
-        <div className="py-16 text-center">
-          <Megaphone size={40} className="mx-auto text-gray-200 mb-3" />
-          <p className="text-sm text-gray-400">まだ募集がありません</p>
-          <p className="text-xs text-gray-300 mt-1">「募集を出す」からあなたの困りごとを発信してみよう</p>
-        </div>
+      {/* ── OB訪問・相談募集 ── */}
+      {mode === "boshuu" && (
+        <>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-gray-400">{displayedPosts.length}件の募集</p>
+            <button onClick={() => setShowCreate(true)} className="flex items-center gap-1.5 text-sm font-semibold btn-ac bg-green-500 text-white px-4 py-2 rounded-xl hover:bg-green-600">
+              <Plus size={15} /> 募集を出す
+            </button>
+          </div>
+          <div className="flex gap-1.5 flex-wrap">
+            <button onClick={() => setFilterTag(null)} className={`text-xs px-3 py-1.5 rounded-full border transition-all ${!filterTag ? "bg-gray-800 text-white border-gray-800" : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"}`}>すべて</button>
+            {allTags.map((t) => (
+              <button key={t} onClick={() => setFilterTag(filterTag === t ? null : t)} className={`text-xs px-3 py-1.5 rounded-full border transition-all ${filterTag === t ? "bg-green-500 text-white border-green-500" : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"}`}>{t}</button>
+            ))}
+          </div>
+          {displayedPosts.length === 0 && (
+            <div className="py-16 text-center"><Megaphone size={40} className="mx-auto text-gray-200 mb-3" /><p className="text-sm text-gray-400">まだ募集がありません</p></div>
+          )}
+          <div className="flex flex-col gap-3">
+            {displayedPosts.map((post) => (
+              <BoshuuCard key={post.id} post={post} responded={respondedIds.has(post.id)} onRespond={() => setRespondTarget(post)} onClose={post.authorId === "me" ? () => setPosts((p) => p.map((x) => x.id === post.id ? { ...x, status: "closed" as const } : x)) : undefined} />
+            ))}
+          </div>
+        </>
       )}
 
-      {/* ── 募集カード一覧 ── */}
-      <div className="flex flex-col gap-3">
-        {displayed.map((post) => (
-          <BoshuuCard
-            key={post.id}
-            post={post}
-            responded={respondedIds.has(post.id)}
-            onRespond={() => setRespondTarget(post)}
-            onClose={post.authorId === "me" ? () => handleClose(post.id) : undefined}
-          />
-        ))}
-      </div>
+      {/* ── PJメンバー募集 ── */}
+      {mode === "project" && (
+        <>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-gray-400">{displayedProjects.length}件の募集</p>
+            <button onClick={() => setShowCreateProject(true)} className="flex items-center gap-1.5 text-sm font-semibold btn-ac bg-green-500 text-white px-4 py-2 rounded-xl hover:bg-green-600">
+              <Plus size={15} /> PJを公募する
+            </button>
+          </div>
+          {displayedProjects.length === 0 && (
+            <div className="py-16 text-center"><Briefcase size={40} className="mx-auto text-gray-200 mb-3" /><p className="text-sm text-gray-400">現在募集中のPJはありません</p></div>
+          )}
+          <div className="flex flex-col gap-3">
+            {displayedProjects.map((post) => (
+              <ProjectCard key={post.id} post={post} raised={raisedIds.has(post.id)} onRaise={() => setRaiseTarget(post)} onClose={post.managerId === "me" ? () => setProjects((p) => p.map((x) => x.id === post.id ? { ...x, status: "closed" as const } : x)) : undefined} />
+            ))}
+          </div>
+        </>
+      )}
 
       {/* ── モーダル群 ── */}
-      {showCreate && (
-        <CreateModal
-          onClose={() => setShowCreate(false)}
-          onCreate={handleCreate}
-        />
-      )}
-
-      {respondTarget && (
-        <RespondModal
-          post={respondTarget}
-          onClose={() => setRespondTarget(null)}
-          onConfirm={handleConfirmRespond}
-        />
-      )}
-
-      {slackTarget && (
-        <SlackMock
-          fromUser={ME}
-          toUser={slackTarget.author}
-          purpose={slackTarget.post.title}
-          onClose={() => setSlackTarget(null)}
-        />
-      )}
+      {showCreate && <CreateModal onClose={() => setShowCreate(false)} onCreate={(p) => { setPosts((prev) => [p, ...prev]); setShowCreate(false); }} />}
+      {showCreateProject && <CreateProjectModal onClose={() => setShowCreateProject(false)} onCreate={(p) => { setProjects((prev) => [p, ...prev]); setShowCreateProject(false); }} />}
+      {respondTarget && <RespondModal post={respondTarget} onClose={() => setRespondTarget(null)} onConfirm={handleConfirmRespond} />}
+      {raiseTarget && <RaiseHandModal post={raiseTarget} onClose={() => setRaiseTarget(null)} onConfirm={handleConfirmRaise} />}
+      {slackTarget && <SlackMock fromUser={ME} toUser={slackTarget.author} purpose={slackTarget.post.title} onClose={() => setSlackTarget(null)} />}
+      {projectSlackTarget && <SlackMock fromUser={ME} toUser={projectSlackTarget.manager} purpose={`「${projectSlackTarget.post.projectName}」への参加希望`} onClose={() => setProjectSlackTarget(null)} />}
     </div>
   );
 }
