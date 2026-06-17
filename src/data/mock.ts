@@ -74,17 +74,27 @@ export type Session = {
 
 export type ProjectPosting = {
   id: string;
-  managerId: string;
+  ownerId: string;
   projectName: string;
   overview: string;
-  industry: string;
-  phase: string;
-  duration: string;
+  category: string;
+  frequency: string;
   headcount: number;
   requirements: string[];
   createdAt: string;
   status: "open" | "closed";
 };
+
+export const PROJECT_CATEGORIES = [
+  { id: "勉強会",      emoji: "🎓" },
+  { id: "読書会",      emoji: "📚" },
+  { id: "社内PJ・改善", emoji: "🛠️" },
+  { id: "社内イベント", emoji: "🎉" },
+  { id: "メンタリング", emoji: "🤝" },
+  { id: "その他",      emoji: "💡" },
+];
+
+export const PROJECT_FREQUENCIES = ["週1回", "月2回", "月1回", "隔月", "不定期", "単発"];
 
 export type Boshuu = {
   id: string;
@@ -445,59 +455,79 @@ export const boshuuList: Boshuu[] = [
   },
 ];
 
-// ─── PJ公募データ ─────────────────────────────────────────
+// ─── 社内コミュニティ・活動データ ─────────────────────────
 
 export const projectPostings: ProjectPosting[] = [
   {
     id: "pj1",
-    managerId: "2",
-    projectName: "大手食品メーカー DX戦略策定",
-    overview: "老舗食品メーカーの中期DX戦略を経営層と一緒につくるPJ。現場ヒアリングから経営層プレゼンまで一気通貫で担当。",
-    industry: "製造",
-    phase: "戦略立案",
-    duration: "2026年7月〜12月（6ヶ月）",
-    headcount: 2,
-    requirements: ["DX戦略立案", "業務改革・BPR"],
+    ownerId: "1",
+    projectName: "AWS・クラウド技術 勉強会",
+    overview: "実務で使えるAWSの知識を深める会。ハンズオン中心で、設計・セキュリティ・コスト管理をテーマに隔週開催。資格取得を目指している方も大歓迎。",
+    category: "勉強会",
+    frequency: "月2回",
+    headcount: 8,
+    requirements: ["クラウド移行(AWS)", "セキュリティ"],
     createdAt: "2026-06-15",
     status: "open",
   },
   {
     id: "pj2",
-    managerId: "1",
-    projectName: "メガバンク クラウド移行 第2フェーズ",
-    overview: "昨年完了したAWS移行に続く第2フェーズ。残存システムのGCP移行とマルチクラウド管理基盤の構築を担当します。",
-    industry: "金融・保険",
-    phase: "設計・開発",
-    duration: "2026年8月〜2027年3月（8ヶ月）",
-    headcount: 3,
-    requirements: ["クラウド移行(GCP)", "クラウド移行(AWS)", "セキュリティ"],
-    createdAt: "2026-06-14",
+    ownerId: "2",
+    projectName: "女性コンサルタント キャリア座談会",
+    overview: "「この業界で女性としてどうキャリアを積むか」を本音で話せる場。マネージャー以上の方にも参加してもらいながら、毎月開催します。全年次歓迎。",
+    category: "社内イベント",
+    frequency: "月1回",
+    headcount: 10,
+    requirements: [],
+    createdAt: "2026-06-13",
     status: "open",
   },
   {
     id: "pj3",
-    managerId: "3",
-    projectName: "グローバル製造業 SAP S/4HANA 導入",
-    overview: "東南アジア5拠点を含むグローバルSAP導入。PMOとして全体管理に加え、製造モジュールの設計・テストを担当。",
-    industry: "製造",
-    phase: "PMO",
-    duration: "2026年9月〜2028年3月（18ヶ月）",
-    headcount: 4,
-    requirements: ["SAP導入・運用", "PMO・プロジェクト管理"],
+    ownerId: "4",
+    projectName: "データ・AI 読書会",
+    overview: "データサイエンス・AI関連の本や論文を月1冊のペースで読んで議論する会。技術書からビジネス書まで幅広く扱います。文系も大歓迎。",
+    category: "読書会",
+    frequency: "月1回",
+    headcount: 6,
+    requirements: ["データ分析・BI", "AI・機械学習活用"],
     createdAt: "2026-06-12",
     status: "open",
   },
   {
     id: "pj4",
-    managerId: "5",
-    projectName: "大手損保 基幹システム刷新 PMO",
-    overview: "業界大手損保の基幹システム刷新PMO支援。クライアントCIOに直接向き合う機会あり。シニア〜マネージャー層歓迎。",
-    industry: "金融・保険",
-    phase: "PMO",
-    duration: "2026年7月〜2027年9月（15ヶ月）",
-    headcount: 2,
-    requirements: ["PMO・プロジェクト管理", "DX戦略立案"],
+    ownerId: "3",
+    projectName: "提案書・スライドの型を作るPJ",
+    overview: "社内横断でベストプラクティスの提案書テンプレートとチェックリストを作る活動。短期集中で社内wikiに整備します。",
+    category: "社内PJ・改善",
+    frequency: "月2回",
+    headcount: 4,
+    requirements: ["提案・プリセールス", "業務改革・BPR"],
     createdAt: "2026-06-10",
+    status: "open",
+  },
+  {
+    id: "pj5",
+    ownerId: "6",
+    projectName: "新人・転職組 ゆるゆる交流部",
+    overview: "入社1〜2年目や転職で入ってきた人が集まって、会社の歩き方・あるあるを共有する非公式の会。常駐中の方もオンラインで参加OK。",
+    category: "社内イベント",
+    frequency: "月1回",
+    headcount: 15,
+    requirements: [],
+    createdAt: "2026-06-09",
+    status: "open",
+  },
+  {
+    id: "pj6",
+    ownerId: "5",
+    projectName: "フットサル部",
+    overview: "毎週水曜夜に近くのフットサルコートで活動中。経験者・未経験者問わず。仕事後に体を動かしてリフレッシュしたい人来て。",
+    category: "社内イベント",
+    frequency: "週1回",
+    headcount: 20,
+    requirements: [],
+    createdAt: "2026-06-08",
     status: "open",
   },
 ];

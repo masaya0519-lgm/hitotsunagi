@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Plus, X, Check, Users, Clock, ChevronRight, Megaphone, Briefcase, Building2 } from "lucide-react";
-import { boshuuList, projectPostings, users, ME, EXPERTISE_AREAS, MEET_STYLES, INDUSTRIES, PHASES } from "../data/mock";
+import { Plus, X, Check, Users, Clock, ChevronRight, Megaphone, Briefcase } from "lucide-react";
+import { boshuuList, projectPostings, users, ME, EXPERTISE_AREAS, MEET_STYLES, PROJECT_CATEGORIES, PROJECT_FREQUENCIES } from "../data/mock";
 import type { Boshuu, ProjectPosting, User } from "../data/mock";
 import SlackMock from "./SlackMock";
 
@@ -94,35 +94,33 @@ function CreateModal({ onClose, onCreate }: CreateModalProps) {
   );
 }
 
-// ─── PJ公募 作成モーダル ──────────────────────────────────
+// ─── 社内活動・PJ公募 作成モーダル ──────────────────────
 
 type CreateProjectModalProps = { onClose: () => void; onCreate: (p: ProjectPosting) => void };
 
 function CreateProjectModal({ onClose, onCreate }: CreateProjectModalProps) {
   const [projectName, setProjectName] = useState("");
   const [overview, setOverview] = useState("");
-  const [industry, setIndustry] = useState("");
-  const [phase, setPhase] = useState("");
-  const [duration, setDuration] = useState("");
-  const [headcount, setHeadcount] = useState("1");
+  const [category, setCategory] = useState("");
+  const [frequency, setFrequency] = useState("");
+  const [headcount, setHeadcount] = useState("5");
   const [requirements, setRequirements] = useState<string[]>([]);
 
   function toggleReq(t: string) {
     setRequirements((prev) => prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]);
   }
 
-  const canSubmit = projectName.trim() && overview.trim() && industry && phase && duration;
+  const canSubmit = projectName.trim() && overview.trim() && category && frequency;
 
   function handleSubmit() {
     if (!canSubmit) return;
     onCreate({
       id: `pj${Date.now()}`,
-      managerId: "me",
+      ownerId: "me",
       projectName: projectName.trim(),
       overview: overview.trim(),
-      industry,
-      phase,
-      duration,
+      category,
+      frequency,
       headcount: Number(headcount),
       requirements,
       createdAt: new Date().toISOString().slice(0, 10),
@@ -138,51 +136,49 @@ function CreateProjectModal({ onClose, onCreate }: CreateProjectModalProps) {
           <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4 md:hidden" />
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base font-bold text-gray-900">PJメンバーを募集する</h2>
-              <p className="text-xs text-gray-400">プロジェクトの概要と求めるスキルを登録しよう</p>
+              <h2 className="text-base font-bold text-gray-900">活動・PJを登録する</h2>
+              <p className="text-xs text-gray-400">勉強会・部活・社内PJなんでもOK</p>
             </div>
             <button onClick={onClose} className="p-1 text-gray-400"><X size={20} /></button>
           </div>
         </div>
         <div className="px-5 py-4 flex flex-col gap-5">
           <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-2">プロジェクト名 <span className="text-red-400">*</span></label>
-            <input value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="例：大手製造業 DX戦略策定" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-300" />
+            <label className="text-sm font-semibold text-gray-700 block mb-2">名前 <span className="text-red-400">*</span></label>
+            <input value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="例：AWS勉強会、フットサル部、読書会" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-300" />
           </div>
           <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-2">概要 <span className="text-red-400">*</span></label>
-            <textarea value={overview} onChange={(e) => setOverview(e.target.value)} placeholder="どんなプロジェクトか、何を担当してもらうかを書いてください" rows={3} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 resize-none" />
+            <label className="text-sm font-semibold text-gray-700 block mb-2">どんな活動？ <span className="text-red-400">*</span></label>
+            <textarea value={overview} onChange={(e) => setOverview(e.target.value)} placeholder="活動内容や雰囲気、参加するとどうなるかを書いてください" rows={3} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 resize-none" />
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-sm font-semibold text-gray-700 block mb-2">業界 <span className="text-red-400">*</span></label>
-              <select value={industry} onChange={(e) => setIndustry(e.target.value)} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
-                <option value="">選択</option>
-                {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="text-sm font-semibold text-gray-700 block mb-2">フェーズ <span className="text-red-400">*</span></label>
-              <select value={phase} onChange={(e) => setPhase(e.target.value)} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
-                <option value="">選択</option>
-                {PHASES.map((p) => <option key={p} value={p}>{p}</option>)}
-              </select>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-sm font-semibold text-gray-700 block mb-2">期間 <span className="text-red-400">*</span></label>
-              <input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="例：6ヶ月" className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300" />
-            </div>
-            <div>
-              <label className="text-sm font-semibold text-gray-700 block mb-2">募集人数</label>
-              <select value={headcount} onChange={(e) => setHeadcount(e.target.value)} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
-                {[1,2,3,4,5].map((n) => <option key={n} value={n}>{n}名</option>)}
-              </select>
+          <div>
+            <label className="text-sm font-semibold text-gray-700 block mb-2">カテゴリ <span className="text-red-400">*</span></label>
+            <div className="grid grid-cols-3 gap-2">
+              {PROJECT_CATEGORIES.map((c) => (
+                <button key={c.id} onClick={() => setCategory(c.id)} className={`flex items-center gap-1.5 text-xs px-3 py-2.5 rounded-xl border font-medium transition-all ${category === c.id ? "bg-green-500 text-white border-green-500" : "bg-white text-gray-600 border-gray-200 hover:border-green-300"}`}>
+                  <span>{c.emoji}</span>{c.id}
+                </button>
+              ))}
             </div>
           </div>
           <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-2">求めるスキル・資格</label>
+            <label className="text-sm font-semibold text-gray-700 block mb-2">活動頻度 <span className="text-red-400">*</span></label>
+            <div className="flex flex-wrap gap-2">
+              {PROJECT_FREQUENCIES.map((f) => (
+                <button key={f} onClick={() => setFrequency(f)} className={`text-sm px-4 py-2 rounded-full border transition-all ${frequency === f ? "bg-green-500 text-white border-green-500" : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"}`}>{f}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="text-sm font-semibold text-gray-700 block mb-2">募集人数（目安）</label>
+            <div className="flex gap-2 flex-wrap">
+              {["3","5","10","15","20","制限なし"].map((n) => (
+                <button key={n} onClick={() => setHeadcount(n)} className={`text-sm px-4 py-2 rounded-full border transition-all ${headcount === n ? "bg-green-500 text-white border-green-500" : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"}`}>{n === "制限なし" ? n : `${n}名`}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="text-sm font-semibold text-gray-700 block mb-2">こんな人に来てほしい（任意）</label>
             <div className="flex flex-wrap gap-1.5">
               {EXPERTISE_AREAS.map((t) => (
                 <button key={t} onClick={() => toggleReq(t)} className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border transition-all ${requirements.includes(t) ? "bg-green-500 text-white border-green-500" : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"}`}>
@@ -194,7 +190,7 @@ function CreateProjectModal({ onClose, onCreate }: CreateProjectModalProps) {
         </div>
         <div className="px-5 pb-8 pt-2">
           <button onClick={handleSubmit} disabled={!canSubmit} className="btn-ac w-full bg-green-500 text-white font-bold py-4 rounded-2xl hover:bg-green-600 text-base disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none">
-            募集を登録する
+            登録する
           </button>
         </div>
       </div>
@@ -232,7 +228,7 @@ function RespondModal({ post, onClose, onConfirm }: RespondModalProps) {
 type RaiseHandModalProps = { post: ProjectPosting; onClose: () => void; onConfirm: () => void };
 
 function RaiseHandModal({ post, onClose, onConfirm }: RaiseHandModalProps) {
-  const manager = resolveUser(post.managerId);
+  const manager = resolveUser(post.ownerId);
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50 md:p-6" onClick={onClose}>
       <div className="bg-white w-full md:max-w-sm md:rounded-3xl rounded-t-3xl" onClick={(e) => e.stopPropagation()}>
@@ -300,25 +296,27 @@ function BoshuuCard({ post, responded, onRespond, onClose }: BoshuuCardProps) {
   );
 }
 
-// ─── PJ公募カード ─────────────────────────────────────────
+// ─── 社内活動カード ───────────────────────────────────────
 
 type ProjectCardProps = { post: ProjectPosting; raised: boolean; onRaise: () => void; onClose?: () => void };
 
 function ProjectCard({ post, raised, onRaise, onClose }: ProjectCardProps) {
-  const manager = resolveUser(post.managerId);
-  const isMe = post.managerId === "me";
+  const owner = resolveUser(post.ownerId);
+  const isMe = post.ownerId === "me";
+  const catEmoji = PROJECT_CATEGORIES.find((c) => c.id === post.category)?.emoji ?? "💡";
+
   return (
     <div className={`bg-white rounded-2xl p-5 flex flex-col gap-3 border ${isMe ? "border-green-200" : "border-gray-100"}`}>
-      {/* PM情報 */}
+      {/* オーナー */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-100 to-lime-100 flex items-center justify-center text-xl shrink-0">{manager.avatar}</div>
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-100 to-lime-100 flex items-center justify-center text-xl shrink-0">{owner.avatar}</div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="font-semibold text-sm text-gray-900">{manager.name}</span>
-              {isMe && <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-md font-medium">自分の募集</span>}
+              <span className="font-semibold text-sm text-gray-900">{owner.name}</span>
+              {isMe && <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-md font-medium">自分の投稿</span>}
             </div>
-            <p className="text-xs text-gray-500">{manager.role}</p>
+            <p className="text-xs text-gray-500">{owner.role}</p>
           </div>
         </div>
         {isMe && onClose && (
@@ -328,38 +326,39 @@ function ProjectCard({ post, raised, onRaise, onClose }: ProjectCardProps) {
         )}
       </div>
 
-      {/* プロジェクト名 */}
-      <h3 className="font-bold text-gray-900 text-sm leading-snug">{post.projectName}</h3>
-
-      {/* 業界・フェーズ・期間 */}
-      <div className="flex flex-wrap gap-1.5">
-        <span className="text-xs bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full font-medium flex items-center gap-1">
-          <Building2 size={10} />{post.industry}
-        </span>
-        <span className="text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-medium">{post.phase}</span>
-        <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">{post.duration}</span>
+      {/* 活動名 + カテゴリバッジ */}
+      <div className="flex items-start gap-2">
+        <span className="text-xl shrink-0 mt-0.5">{catEmoji}</span>
+        <div>
+          <h3 className="font-bold text-gray-900 text-sm leading-snug">{post.projectName}</h3>
+          <div className="flex flex-wrap gap-1.5 mt-1.5">
+            <span className="text-xs bg-green-50 text-green-700 px-2.5 py-1 rounded-full font-medium">{post.category}</span>
+            <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full flex items-center gap-1"><Clock size={10} />{post.frequency}</span>
+          </div>
+        </div>
       </div>
 
       {/* 概要 */}
       <p className="text-xs text-gray-600 leading-relaxed">{post.overview}</p>
 
-      {/* 求めるスキル */}
+      {/* 求める人 */}
       {post.requirements.length > 0 && (
-        <div>
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1.5">求めるスキル</p>
-          <div className="flex flex-wrap gap-1.5">
-            {post.requirements.map((r) => <span key={r} className="text-xs bg-green-50 text-green-700 px-2.5 py-1 rounded-full">{r}</span>)}
-          </div>
+        <div className="flex flex-wrap gap-1.5">
+          <span className="text-xs text-gray-400">こんな人歓迎 →</span>
+          {post.requirements.map((r) => <span key={r} className="text-xs bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full">{r}</span>)}
         </div>
       )}
 
       {/* フッター */}
       <div className="flex items-center justify-between pt-1 border-t border-gray-100">
-        <span className="flex items-center gap-1 text-xs text-gray-400"><Users size={11} />募集{post.headcount}名</span>
+        <span className="flex items-center gap-1 text-xs text-gray-400">
+          <Users size={11} />
+          {post.headcount === 0 ? "制限なし" : `${post.headcount}名募集中`}
+        </span>
         {!isMe && (
           raised
-            ? <span className="flex items-center gap-1 text-xs text-green-600 font-medium bg-green-50 px-3 py-1.5 rounded-full"><Check size={11} /> 手を挙げました</span>
-            : <button onClick={onRaise} className="flex items-center gap-1 text-xs text-green-700 font-medium bg-green-50 hover:bg-green-100 transition-colors px-3 py-1.5 rounded-full">手を挙げる 🙋 <ChevronRight size={11} /></button>
+            ? <span className="flex items-center gap-1 text-xs text-green-600 font-medium bg-green-50 px-3 py-1.5 rounded-full"><Check size={11} /> 参加表明しました</span>
+            : <button onClick={onRaise} className="flex items-center gap-1 text-xs text-green-700 font-medium bg-green-50 hover:bg-green-100 transition-colors px-3 py-1.5 rounded-full">参加したい 🙋 <ChevronRight size={11} /></button>
         )}
       </div>
     </div>
@@ -384,7 +383,7 @@ export default function BoshuuTab() {
   const [raisedIds, setRaisedIds] = useState<Set<string>>(new Set());
   const [showCreateProject, setShowCreateProject] = useState(false);
   const [raiseTarget, setRaiseTarget] = useState<ProjectPosting | null>(null);
-  const [projectSlackTarget, setProjectSlackTarget] = useState<{ post: ProjectPosting; manager: User } | null>(null);
+  const [projectSlackTarget, setProjectSlackTarget] = useState<{ post: ProjectPosting; owner: User } | null>(null);
 
   const allTags = Array.from(new Set(posts.flatMap((p) => p.tags)));
   const displayedPosts = (filterTag ? posts.filter((p) => p.tags.includes(filterTag) && p.status === "open") : posts.filter((p) => p.status === "open"));
@@ -401,8 +400,8 @@ export default function BoshuuTab() {
   function handleConfirmRaise() {
     if (!raiseTarget) return;
     setRaisedIds((prev) => new Set([...prev, raiseTarget.id]));
-    const manager = resolveUser(raiseTarget.managerId);
-    setProjectSlackTarget({ post: raiseTarget, manager });
+    const owner = resolveUser(raiseTarget.ownerId);
+    setProjectSlackTarget({ post: raiseTarget, owner });
     setRaiseTarget(null);
   }
 
@@ -459,7 +458,7 @@ export default function BoshuuTab() {
           )}
           <div className="flex flex-col gap-3">
             {displayedProjects.map((post) => (
-              <ProjectCard key={post.id} post={post} raised={raisedIds.has(post.id)} onRaise={() => setRaiseTarget(post)} onClose={post.managerId === "me" ? () => setProjects((p) => p.map((x) => x.id === post.id ? { ...x, status: "closed" as const } : x)) : undefined} />
+              <ProjectCard key={post.id} post={post} raised={raisedIds.has(post.id)} onRaise={() => setRaiseTarget(post)} onClose={post.ownerId === "me" ? () => setProjects((p) => p.map((x) => x.id === post.id ? { ...x, status: "closed" as const } : x)) : undefined} />
             ))}
           </div>
         </>
@@ -471,7 +470,7 @@ export default function BoshuuTab() {
       {respondTarget && <RespondModal post={respondTarget} onClose={() => setRespondTarget(null)} onConfirm={handleConfirmRespond} />}
       {raiseTarget && <RaiseHandModal post={raiseTarget} onClose={() => setRaiseTarget(null)} onConfirm={handleConfirmRaise} />}
       {slackTarget && <SlackMock fromUser={ME} toUser={slackTarget.author} purpose={slackTarget.post.title} onClose={() => setSlackTarget(null)} />}
-      {projectSlackTarget && <SlackMock fromUser={ME} toUser={projectSlackTarget.manager} purpose={`「${projectSlackTarget.post.projectName}」への参加希望`} onClose={() => setProjectSlackTarget(null)} />}
+      {projectSlackTarget && <SlackMock fromUser={ME} toUser={projectSlackTarget.owner} purpose={`「${projectSlackTarget.post.projectName}」への参加希望`} onClose={() => setProjectSlackTarget(null)} />}
     </div>
   );
 }
