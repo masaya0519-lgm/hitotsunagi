@@ -191,7 +191,7 @@ export default function HelpTab() {
 
       {/* ── 1. ユーザーへの価値（ファーストビュー） ── */}
       <section>
-        <SectionHeader icon={<Smile size={16} />} label="ひとつなぎ で変わること" />
+        <SectionHeader icon={<Smile size={16} />} label="agora で変わること" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {USER_BENEFITS.map((b) => (
             <div key={b.title} className="bg-white border-2 border-green-50 rounded-2xl p-4 hover:border-green-200 transition-colors">

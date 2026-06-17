@@ -35,7 +35,7 @@ export default function App() {
       <aside className="hidden md:flex flex-col w-56 lg:w-64 bg-white border-r border-green-100 shrink-0">
         <div className="px-5 py-5 border-b border-green-100">
           <h1 className="text-lg font-extrabold bg-gradient-to-r from-green-600 to-lime-400 bg-clip-text text-transparent tracking-wide">
-            🍃 ひとつなぎ
+            🏛️ agora
           </h1>
           <p className="text-xs text-gray-400 mt-0.5">社内のひとと、もっと話そう</p>
         </div>
@@ -76,7 +76,7 @@ export default function App() {
           <div>
             <h2 className="font-extrabold text-gray-900 text-base md:text-lg">
               <span className="md:hidden bg-gradient-to-r from-green-600 to-lime-400 bg-clip-text text-transparent">
-                🍃 ひとつなぎ
+                🏛️ agora
               </span>
               <span className="hidden md:inline">{current.label}</span>
             </h2>
